@@ -1,0 +1,43 @@
+{
+  "order": 1,
+  "id": "money-float",
+  "title": "The missing penny",
+  "hook": "Ten dimes should make exactly one dollar. Do they?",
+  "concept": "Binary floating point cannot store 0.1 exactly, so small errors creep into sums and comparisons. Every mainstream language uses the same IEEE 754 doubles, so the bug travels with you. The real fix is a different representation: count whole cents, or use a decimal type.",
+  "checks": [
+    {
+      "id": "ten-dimes",
+      "label": "Add 0.10 ten times, show the total",
+      "correct": "1.00"
+    },
+    {
+      "id": "equals-point-three",
+      "label": "Is 0.1 + 0.2 equal to 0.3?",
+      "correct": "true"
+    }
+  ],
+  "worlds": {
+    "js": "Numbers are IEEE 754 doubles. The total prints as 0.9999999999999999 and the equality is false. Nothing warns you.",
+    "python": "float is an IEEE 754 double, identical to JavaScript. The standard library offers decimal.Decimal for exact money arithmetic.",
+    "java": "double behaves the same. Java also ships BigDecimal, but nothing stops you from writing the broken version."
+  },
+  "fix": "Store money as integer cents (or a decimal type) and only format at the edge. Compare rounded integers, never raw floats.",
+  "regression": {
+    "js": "const assert = require(\"node:assert\");\nconst toCents = (price) => Math.round(price * 100);\nassert.strictEqual(toCents(0.1) + toCents(0.2), toCents(0.3));\nassert.strictEqual(toCents(0.1) * 10, 100);\n",
+    "python": "from decimal import Decimal\n\nassert Decimal(\"0.1\") + Decimal(\"0.2\") == Decimal(\"0.3\")\nassert sum(Decimal(\"0.1\") for _ in range(10)) == Decimal(\"1.0\")\n"
+  },
+  "expected": {
+    "js": {
+      "ten-dimes": "silent",
+      "equals-point-three": "silent"
+    },
+    "python": {
+      "ten-dimes": "silent",
+      "equals-point-three": "silent"
+    },
+    "java": {
+      "ten-dimes": "silent",
+      "equals-point-three": "silent"
+    }
+  }
+}

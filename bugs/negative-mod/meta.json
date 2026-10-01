@@ -1,0 +1,43 @@
+{
+  "order": 6,
+  "id": "negative-mod",
+  "title": "Minus one is not always four",
+  "hook": "Step back one slot in a ring of five. Which slot are you in?",
+  "concept": "The remainder operator and integer division round toward zero in some languages and toward negative infinity in others. The difference only shows up for negative numbers, which is exactly when ring buffers, calendars and pagination break.",
+  "checks": [
+    {
+      "id": "ring-slot",
+      "label": "-1 mod 5 (a ring of five slots)",
+      "correct": "4"
+    },
+    {
+      "id": "floor-division",
+      "label": "-7 divided by 2, rounded down",
+      "correct": "-4"
+    }
+  ],
+  "worlds": {
+    "js": "% keeps the sign of the left side, so -1 % 5 is -1. Math.trunc rounds toward zero, giving -3.",
+    "python": "% and // follow the floor rule, so both answers are what a mathematician expects.",
+    "java": "% and / truncate toward zero like C. Math.floorMod and Math.floorDiv give the floor behavior."
+  },
+  "fix": "Use floor-based helpers when the value can be negative: Math.floorMod and Math.floorDiv in Java, ((n % m) + m) % m and Math.floor in JavaScript.",
+  "regression": {
+    "js": "const assert = require(\"node:assert\");\nconst mod = (n, m) => ((n % m) + m) % m;\nassert.strictEqual(mod(-1, 5), 4);\nassert.strictEqual(Math.floor(-7 / 2), -4);\n",
+    "python": "assert -1 % 5 == 4\nassert -7 // 2 == -4\n"
+  },
+  "expected": {
+    "js": {
+      "ring-slot": "silent",
+      "floor-division": "silent"
+    },
+    "python": {
+      "ring-slot": "safe",
+      "floor-division": "safe"
+    },
+    "java": {
+      "ring-slot": "silent",
+      "floor-division": "silent"
+    }
+  }
+}

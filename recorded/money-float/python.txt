@@ -1,0 +1,2 @@
+CHECK ten-dimes|0.9999999999999999|1.00
+CHECK equals-point-three|false|true

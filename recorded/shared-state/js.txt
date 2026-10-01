@@ -1,0 +1,2 @@
+CHECK grid-rows|3|1
+CHECK reused-bucket|1|1

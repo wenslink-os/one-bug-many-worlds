@@ -1,0 +1,43 @@
+{
+  "order": 3,
+  "id": "shared-state",
+  "title": "Three rows, one list",
+  "hook": "Build a grid of three empty rows, add one item to the first row. How many items does the grid hold?",
+  "concept": "Repeating a mutable object does not copy it. All three rows point at the same list, so a change in one row shows up in all of them. A related trap is a default value that is created once and then shared between calls.",
+  "checks": [
+    {
+      "id": "grid-rows",
+      "label": "Items in a 3-row grid after adding one item to row 0",
+      "correct": "1"
+    },
+    {
+      "id": "reused-bucket",
+      "label": "Length of the list returned by the second call to add(2)",
+      "correct": "1"
+    }
+  ],
+  "worlds": {
+    "js": "fill([]) puts the same array in every slot, so the grid holds 3. Default parameters are evaluated on each call, so the second check is safe.",
+    "python": "[[]] * 3 repeats one list. A default argument like bucket=[] is created once at definition time, so the second call sees the first call's item.",
+    "java": "Collections.nCopies repeats one list. Java has no default arguments, but a shared static list makes the same mistake."
+  },
+  "fix": "Create a fresh object per row or per call: Array.from with a factory, a list comprehension, a loop, or bucket=None and create the list inside the function.",
+  "regression": {
+    "js": "const assert = require(\"node:assert\");\nconst grid = Array.from({ length: 3 }, () => []);\ngrid[0].push(1);\nassert.strictEqual(grid.flat().length, 1);\n",
+    "python": "def add_item(item, bucket=None):\n    if bucket is None:\n        bucket = []\n    bucket.append(item)\n    return bucket\n\n\ngrid = [[] for _ in range(3)]\ngrid[0].append(1)\nassert sum(len(row) for row in grid) == 1\nadd_item(1)\nassert len(add_item(2)) == 1\n"
+  },
+  "expected": {
+    "js": {
+      "grid-rows": "silent",
+      "reused-bucket": "safe"
+    },
+    "python": {
+      "grid-rows": "silent",
+      "reused-bucket": "silent"
+    },
+    "java": {
+      "grid-rows": "silent",
+      "reused-bucket": "silent"
+    }
+  }
+}

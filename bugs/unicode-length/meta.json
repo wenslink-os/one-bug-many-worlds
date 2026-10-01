@@ -1,0 +1,43 @@
+{
+  "order": 4,
+  "id": "unicode-length",
+  "title": "Two letters, three characters",
+  "hook": "How long is \"a\" followed by a smiley, and are two ways of writing \"e with acute\" equal?",
+  "concept": "Text has several layers: bytes, code units, code points and what a person sees. Languages count different layers by default. Equal-looking text can also be stored as different sequences, so a plain comparison fails.",
+  "checks": [
+    {
+      "id": "emoji-length",
+      "label": "Length of \"a\" plus one emoji (what a user sees: 2)",
+      "correct": "2"
+    },
+    {
+      "id": "accent-equality",
+      "label": "Is the single character é equal to e plus a combining accent?",
+      "correct": "true"
+    }
+  ],
+  "worlds": {
+    "js": "length counts UTF-16 code units, so the emoji counts as 2 and the total is 3. Spreading the string iterates code points. The two accent spellings compare unequal until normalized.",
+    "python": "len counts code points, so the length is 2 and correct. The accent spellings are still unequal until you call unicodedata.normalize.",
+    "java": "length() counts UTF-16 code units and returns 3. codePointCount gives 2. Normalizer handles the accent comparison."
+  },
+  "fix": "Count the unit your users care about (code points at minimum, graphemes for real user-facing limits) and normalize text before comparing or hashing it.",
+  "regression": {
+    "js": "const assert = require(\"node:assert\");\nassert.strictEqual(\"\\u00e9\".normalize(\"NFC\"), \"e\\u0301\".normalize(\"NFC\"));\nassert.strictEqual([...\"a\\u{1F600}\"].length, 2);\n",
+    "python": "import unicodedata\n\nassert unicodedata.normalize(\"NFC\", \"\\u00e9\") == unicodedata.normalize(\"NFC\", \"e\\u0301\")\nassert len(\"a\\U0001F600\") == 2\n"
+  },
+  "expected": {
+    "js": {
+      "emoji-length": "silent",
+      "accent-equality": "silent"
+    },
+    "python": {
+      "emoji-length": "safe",
+      "accent-equality": "silent"
+    },
+    "java": {
+      "emoji-length": "silent",
+      "accent-equality": "silent"
+    }
+  }
+}

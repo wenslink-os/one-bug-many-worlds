@@ -1,0 +1,2 @@
+CHECK emoji-length|3|2
+CHECK accent-equality|false|true

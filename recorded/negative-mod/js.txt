@@ -1,0 +1,2 @@
+CHECK ring-slot|-1|4
+CHECK floor-division|-3|-4

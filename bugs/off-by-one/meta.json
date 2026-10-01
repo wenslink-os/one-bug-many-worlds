@@ -1,0 +1,43 @@
+{
+  "order": 5,
+  "id": "off-by-one",
+  "title": "One step too far",
+  "hook": "Loop one index past the end of an array. Who tells you?",
+  "concept": "Reading outside an array is a mistake in every language, but the languages disagree on how loudly they complain. A loud failure is easy to find. A quiet one ships.",
+  "checks": [
+    {
+      "id": "sum-inclusive-loop",
+      "label": "Sum of [1, 2, 3] using i <= length",
+      "correct": "6"
+    },
+    {
+      "id": "last-element",
+      "label": "Last element of [1, 2, 3] using [-1]",
+      "correct": "3"
+    }
+  ],
+  "worlds": {
+    "js": "Reading past the end returns undefined, and 6 + undefined is NaN. A negative index is just a missing property, so [-1] is undefined. No error in either case.",
+    "python": "The out-of-range read raises IndexError. Negative indexes are a feature that counts from the end, so [-1] is correct.",
+    "java": "Both reads throw ArrayIndexOutOfBoundsException. Loud, and therefore easy to find."
+  },
+  "fix": "Loop with i < length (or iterate the elements directly) and use at(-1) in JavaScript or length - 1 in Java for the last element.",
+  "regression": {
+    "js": "const assert = require(\"node:assert\");\nconst a = [1, 2, 3];\nlet s = 0;\nfor (let i = 0; i < a.length; i++) s += a[i];\nassert.strictEqual(s, 6);\nassert.strictEqual(a.at(-1), 3);\n",
+    "python": "a = [1, 2, 3]\nassert sum(a[i] for i in range(len(a))) == 6\nassert a[-1] == 3\ntry:\n    a[len(a)]\nexcept IndexError:\n    pass\nelse:\n    raise AssertionError(\"expected IndexError\")\n"
+  },
+  "expected": {
+    "js": {
+      "sum-inclusive-loop": "silent",
+      "last-element": "silent"
+    },
+    "python": {
+      "sum-inclusive-loop": "raises",
+      "last-element": "safe"
+    },
+    "java": {
+      "sum-inclusive-loop": "raises",
+      "last-element": "raises"
+    }
+  }
+}

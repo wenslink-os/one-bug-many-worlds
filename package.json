@@ -1,0 +1,13 @@
+{
+  "name": "one-bug-many-worlds",
+  "version": "1.0.0",
+  "description": "One bug, many programming languages: predict where it hides, then see it run.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "node tools/build.js",
+    "test": "node --test tools/test.js",
+    "serve": "node tools/serve.js"
+  },
+  "engines": { "node": ">=20" }
+}

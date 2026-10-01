@@ -1,0 +1,2 @@
+CHECK sum-inclusive-loop|ERROR IndexError|6
+CHECK last-element|3|3

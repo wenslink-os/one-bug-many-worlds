@@ -1,0 +1,43 @@
+{
+  "order": 2,
+  "id": "int-overflow",
+  "title": "The counter that wrapped",
+  "hook": "Add one to a very large number. The answer depends on where you are.",
+  "concept": "Each language decides how many bits a number has and what happens at the edge. Java int wraps around to a negative number. JavaScript numbers never wrap at 32 bits but stop counting exactly above 2^53. Python integers simply keep growing.",
+  "checks": [
+    {
+      "id": "int32-max-plus-one",
+      "label": "2147483647 + 1",
+      "correct": "2147483648"
+    },
+    {
+      "id": "id-above-2-pow-53",
+      "label": "9007199254740992 + 1",
+      "correct": "9007199254740993"
+    }
+  ],
+  "worlds": {
+    "js": "The first line is fine because numbers are doubles. The second silently returns 9007199254740992, the same number you started with. Large ids from a database can be corrupted this way.",
+    "python": "Integers have no fixed size, so both lines are correct. Nothing to fix in this world.",
+    "java": "int wraps to -2147483648 without any error. long holds 64 bits, so the second line is correct."
+  },
+  "fix": "Pick a type that is wide enough for the value (long in Java, BigInt or strings for ids in JavaScript), and validate ranges where numbers enter your system.",
+  "regression": {
+    "js": "const assert = require(\"node:assert\");\nconst id = \"9007199254740993\";\nassert.strictEqual((BigInt(id) + 1n).toString(), \"9007199254740994\");\nassert.notStrictEqual(String(Number(id) + 1), \"9007199254740994\");\n",
+    "python": "def checked_int32(n):\n    if not -2**31 <= n < 2**31:\n        raise OverflowError(n)\n    return n\n\n\nassert checked_int32(2**31 - 1) == 2**31 - 1\ntry:\n    checked_int32(2**31 - 1 + 1)\nexcept OverflowError:\n    pass\nelse:\n    raise AssertionError(\"overflow not detected\")\n"
+  },
+  "expected": {
+    "js": {
+      "int32-max-plus-one": "safe",
+      "id-above-2-pow-53": "silent"
+    },
+    "python": {
+      "int32-max-plus-one": "safe",
+      "id-above-2-pow-53": "safe"
+    },
+    "java": {
+      "int32-max-plus-one": "silent",
+      "id-above-2-pow-53": "safe"
+    }
+  }
+}

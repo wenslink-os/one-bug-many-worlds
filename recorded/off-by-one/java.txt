@@ -1,0 +1,2 @@
+CHECK sum-inclusive-loop|ERROR ArrayIndexOutOfBoundsException|6
+CHECK last-element|ERROR ArrayIndexOutOfBoundsException|3

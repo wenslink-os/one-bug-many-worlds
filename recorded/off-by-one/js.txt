@@ -1,0 +1,2 @@
+CHECK sum-inclusive-loop|NaN|6
+CHECK last-element|undefined|3
